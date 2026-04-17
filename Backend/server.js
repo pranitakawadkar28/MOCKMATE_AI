@@ -1,6 +1,19 @@
-import app from "./src/app.js"
-import { PORT } from "./src/config/env.js"
+import app from "./src/app.js";
+import connectToDb from "./src/config/db.js";
+import { PORT } from "./src/config/env.js";
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port : ${PORT}`);
-})
+const startServer = async () => {
+   try {
+        await connectToDb();
+
+        app.listen(PORT, () => {
+            console.log(`SERVER IS RUNNING ON PORT ${PORT}`);
+        });
+
+    } catch (error) {
+        console.error("FAILED TO START SERVER:", error.message);
+        process.exit(1);
+    }
+};
+
+startServer();
