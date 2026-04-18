@@ -15,3 +15,17 @@ export const setAuthCookies = (res, accessToken, refreshToken) => {
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 };
+
+export const clearAuthCookies = (res) => {
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    secure: NODE_ENV === "production",
+    sameSite: "lax",
+  });
+
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: NODE_ENV === "production",
+    sameSite: "lax",
+  });
+};

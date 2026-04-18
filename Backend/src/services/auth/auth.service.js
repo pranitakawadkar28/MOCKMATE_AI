@@ -112,3 +112,17 @@ export const loginService = async ({ email, password }) => {
 
   return { user, accessToken, refreshToken };
 };
+
+export const logoutService = async (accessToken, refreshToken) => {
+  if (!refreshToken) return;
+
+  const hashed = crypto
+    .createHash("sha256")
+    .update(refreshToken)
+    .digest("hex");
+
+  await User.updateOne(
+    { refreshToken: hashed },
+    { $unset: { refreshToken: 1 } }
+  );
+};
