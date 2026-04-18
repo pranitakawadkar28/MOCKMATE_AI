@@ -1,10 +1,12 @@
 import { REFRESH_TOKEN_SECRET } from "../../config/env.js";
 import { 
+  forgotPasswordService,
   getMeService,
   loginService,
   logoutService,
   refreshTokenService,
   registerService, 
+  resetPasswordService, 
   verifyOtpService 
 } from "../../services/auth/auth.service.js";
 
@@ -102,6 +104,32 @@ export const refreshTokenController = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: "TOKEN_REFRESHED_SUCCESSFULLY",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const forgotPasswordController = async (req, res, next) => {
+  try {
+    await forgotPasswordService(req.body);
+
+    res.status(200).json({
+      success: true,
+      message: "RESET_OTP_SENT_SUCCESSFULLY",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const resetPasswordController = async (req, res, next) => {
+  try {
+    await resetPasswordService(req.body);
+
+    res.status(200).json({
+      success: true,
+      message: "PASSWORD_RESET_SUCCESSFULLY",
     });
   } catch (err) {
     next(err);

@@ -27,3 +27,16 @@ export const sendOtpEmail = async (email, otp) => {
     `,
   });
 };
+
+export const sendResetPasswordEmail = async (email, otp) => {
+  await transporter.sendMail({
+    from: `MOCKMATE_AI <${EMAIL_USER}>`,
+    to: email,
+    subject: "Reset Password OTP",
+    html: `
+      <h2>Reset Password</h2>
+      <p>Your OTP is: <strong>${otp}</strong></p>
+      <p>Valid for 10 minutes only.</p>
+    `,
+  });
+};

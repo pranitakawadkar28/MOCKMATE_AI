@@ -33,3 +33,27 @@ export const loginSchema = z.object({
   email: z.string().trim().toLowerCase().email("Invalid email address"),
   password: z.string().min(1, "Password required"),
 });
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().trim().toLowerCase().email("Invalid email address"),
+});
+
+export const resetPasswordSchema = z
+  .object({
+    email: z.string().email().trim().toLowerCase(),
+
+    otp: z.string().regex(/^\d{6}$/, "OTP must be 6 digits"),
+
+    newPassword: z
+      .string()
+      .min(8, "Password must be at least 8 chars")
+      .regex(/[A-Z]/, "Must contain uppercase letter")
+      .regex(/[a-z]/, "Must contain lowercase letter")
+      .regex(/[0-9]/, "Must contain number"),
+
+    confirmPassword: z.string().min(1, "Confirm password is required"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });

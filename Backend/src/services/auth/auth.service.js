@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 
 import { User } from "../../models/user.model.js";
 import { AppError } from "../../utils/AppError.js";
-import { sendOtpEmail } from "../../utils/emailSender.js";
+import { sendOtpEmail, sendResetPasswordEmail } from "../../utils/emailSender.js";
 import { comparePassword, hashPassword } from "../../utils/hash.js";
 import { generateAccessToken, generateRefreshToken } from "../../utils/jwt.js";
 import {
@@ -11,6 +11,7 @@ import {
   generateOTP,
   getOTP,
   storeOTP,
+  verifyOTP,
 } from "../../utils/otpGenerator.js";
 import { REFRESH_TOKEN_SECRET } from "../../config/env.js";
 
@@ -172,4 +173,51 @@ export const refreshTokenService = async (refreshToken) => {
   });
 
   return { newAccessToken, newRefreshToken };
+};
+
+export const forgotPasswordService = async ({ email }) => {
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new AppError("USER_NOT_FOUND", 404);
+  }
+
+  if (!user.isVerified) {
+    throw new AppError("EMAIL_NOT_VERIFIED", 400);
+  }
+
+  const otp = generateOTP();
+  await storeOTP(email, otp);
+  await sendResetPasswordEmail(email, otp);
+
+  return { message: "RESET_OTP_SENT_SUCCESSFULLY" };
+};
+
+
+export const resetPasswordService = async ({ email, otp, newPassword }) => {
+  const user = await User.findOne({ email }).select("+password");
+
+  if (!user) {
+    throw new AppError("USER_NOT_FOUND", 404);
+  }
+
+  // OTP verify 
+  const isValid = await verifyOTP(email, otp);
+  if (!isValid) {
+    throw new AppError("INVALID_OR_EXPIRED_OTP", 400);
+  }
+
+  // Naya password hash 
+  const hashedPassword = await hashPassword(newPassword);
+  user.password = hashedPassword;
+
+  // TokenVersion increment karo - purane tokens invalidate ho jayenge
+  user.tokenVersion += 1;
+
+  await user.save();
+
+  // OTP delete 
+  await deleteOTP(email);
+
+  return { message: "PASSWORD_RESET_SUCCESSFULLY" };
 };
