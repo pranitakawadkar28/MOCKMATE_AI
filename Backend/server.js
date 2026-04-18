@@ -1,10 +1,13 @@
 import app from "./src/app.js";
 import connectToDb from "./src/config/db.js";
 import { PORT } from "./src/config/env.js";
+import { connectRedis } from "./src/config/redis.js";
 
 const startServer = async () => {
    try {
         await connectToDb();
+
+        await connectRedis();
 
         app.listen(PORT, () => {
             console.log(`SERVER IS RUNNING ON PORT ${PORT}`);

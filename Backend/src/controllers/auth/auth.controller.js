@@ -1,4 +1,7 @@
-import { registerService } from "../../services/auth/auth.service.js";
+import { 
+  registerService, 
+  verifyOtpService 
+} from "../../services/auth/auth.service.js";
 
 export const registerController = async (req, res, next) => {
   try {
@@ -13,5 +16,17 @@ export const registerController = async (req, res, next) => {
     });
   } catch (err) {
     next(err);
+  }
+};
+
+export const verifyOtpController = async (req, res, next) => {
+  try {
+    const { email, otp } = req.body;
+
+    const result = await verifyOtpService({ email, otp });
+
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
   }
 };

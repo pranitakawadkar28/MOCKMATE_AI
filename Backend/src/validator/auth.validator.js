@@ -23,3 +23,8 @@ export const registerSchema = z.object({
 
   password: passwordSchema,
 });
+
+export const verifyOtpSchema = z.object({
+  email: z.string().trim().toLowerCase().email("Invalid email address"),
+  otp: z.string().length(6, "OTP must be 6 digits"),
+});

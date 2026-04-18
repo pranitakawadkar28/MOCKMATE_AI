@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
-import { MOGODB_URL } from "./env.js";
+import { MONGODB_URL } from "./env.js";
 
 const connectToDb = async () => {
     try {
-        await mongoose.connect(MOGODB_URL);
+        await mongoose.connect(MONGODB_URL);
         console.log("DATABASE CONNECTED SUCCESSFULLY!")
     } catch (error) {
         console.log(error)
