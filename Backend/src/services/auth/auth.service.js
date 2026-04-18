@@ -1,7 +1,9 @@
+import crypto from "crypto";
 import { User } from "../../models/user.model.js";
 import { AppError } from "../../utils/AppError.js";
 import { sendOtpEmail } from "../../utils/emailSender.js";
-import { hashPassword } from "../../utils/hash.js";
+import { comparePassword, hashPassword } from "../../utils/hash.js";
+import { generateAccessToken, generateRefreshToken } from "../../utils/jwt.js";
 import {
   deleteOTP,
   generateOTP,
@@ -33,7 +35,7 @@ export const registerService = async ({ username, email, password }) => {
 
   const otp = generateOTP();
   await storeOTP(email, otp);
-  
+
   try {
     await sendOtpEmail(email, otp);
   } catch (err) {
@@ -71,4 +73,42 @@ export const verifyOtpService = async ({ email, otp }) => {
   await deleteOTP(email);
 
   return { message: "USER_VERIFIED_SUCCESSFULLY" };
+};
+
+export const loginService = async ({ email, password }) => {
+  const user = await User.findOne({ email }).select("+password");
+
+  if (!user) {
+    throw new AppError("INVALID_CREDENTIALS", 401);
+  }
+
+  if (!user.isVerified) {
+    throw new AppError("EMAIL_NOT_VERIFIED", 403);
+  }
+
+  const isMatched = await comparePassword(password, user.password);
+
+  if (!isMatched) {
+    throw new AppError("INVALID_CREDENTIALS", 401);
+  }
+
+  const accessToken = generateAccessToken({
+    userId: user._id,
+    tokenVersion: user.tokenVersion,
+  });
+
+  const refreshToken = generateRefreshToken({
+    userId: user._id,
+    tokenVersion: user.tokenVersion,
+  });
+
+  const hashedRefreshToken = crypto
+    .createHash("sha256")
+    .update(refreshToken)
+    .digest("hex");
+
+  user.refreshToken = hashedRefreshToken;
+  await user.save();
+
+  return { user, accessToken, refreshToken };
 };

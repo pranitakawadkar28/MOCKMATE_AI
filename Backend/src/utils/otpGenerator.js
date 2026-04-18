@@ -8,7 +8,6 @@ export const generateOTP = () => {
 
 // Redis store (TTL: 10 min)
 export const storeOTP = async (email, otp) => {
-    console.log("Storing OTP:", otp);
     await redisClient.setEx(
         `otp:${email}`,
         10 * 60,
