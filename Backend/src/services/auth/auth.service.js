@@ -126,3 +126,13 @@ export const logoutService = async (accessToken, refreshToken) => {
     { $unset: { refreshToken: 1 } }
   );
 };
+
+export const getMeService = async (userId) => {
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new AppError("USER_NOT_FOUND", 404);
+  }
+
+  return { user };
+};

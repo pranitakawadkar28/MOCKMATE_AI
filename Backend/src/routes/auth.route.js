@@ -7,6 +7,7 @@ import {
 } from "../validator/auth.validator.js";
 
 import {
+  getMeController,
   loginController,
   logoutController,
   registerController,
@@ -40,5 +41,11 @@ authRouter.post(
     authenticate,
     logoutController
 );
+
+authRouter.get(
+    "/me",
+    authenticate,
+    getMeController
+)
 
 export default authRouter;
