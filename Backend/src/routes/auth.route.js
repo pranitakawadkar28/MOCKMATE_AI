@@ -1,16 +1,19 @@
 import express from "express";
-import { validate } from "../middlewares/validator.js";
+import { validate } from "../middlewares/validator.middleware.js";
 import {
   loginSchema,
   registerSchema,
   verifyOtpSchema,
 } from "../validator/auth.validator.js";
+
 import {
   loginController,
   logoutController,
   registerController,
   verifyOtpController,
 } from "../controllers/auth/auth.controller.js";
+
+import { authenticate } from "../middlewares/auth.middleware.js";
 
 const authRouter = express.Router();
 
@@ -34,6 +37,7 @@ authRouter.post(
 
 authRouter.post(
     "/logout",
+    authenticate,
     logoutController
 );
 
