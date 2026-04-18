@@ -1,9 +1,12 @@
 import crypto from "crypto";
-import jwt from "jsonwebtoken"; 
+import jwt from "jsonwebtoken";
 
 import { User } from "../../models/user.model.js";
 import { AppError } from "../../utils/AppError.js";
-import { sendOtpEmail, sendResetPasswordEmail } from "../../utils/emailSender.js";
+import {
+  sendOtpEmail,
+  sendResetPasswordEmail,
+} from "../../utils/emailSender.js";
 import { comparePassword, hashPassword } from "../../utils/hash.js";
 import { generateAccessToken, generateRefreshToken } from "../../utils/jwt.js";
 import {
@@ -55,6 +58,12 @@ export const verifyOtpService = async ({ email, otp }) => {
     throw new AppError("EMAIL_AND_OTP_REQUIRED", 400);
   }
 
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new AppError("USER_NOT_FOUND", 404);
+  }
+
   const storedOtp = await getOTP(email);
 
   if (!storedOtp) {
@@ -65,10 +74,9 @@ export const verifyOtpService = async ({ email, otp }) => {
     throw new AppError("INVALID_OTP", 400);
   }
 
-  const user = await User.findOne({ email });
-
-  if (!user) {
-    throw new AppError("USER_NOT_FOUND", 404);
+  // Timing-safe comparison (previous review se)
+  if (!crypto.timingSafeEqual(Buffer.from(storedOtp), Buffer.from(otp))) {
+    throw new AppError("INVALID_OTP", 400);
   }
 
   user.isVerified = true;
@@ -120,14 +128,11 @@ export const loginService = async ({ email, password }) => {
 export const logoutService = async (accessToken, refreshToken) => {
   if (!refreshToken) return;
 
-  const hashed = crypto
-    .createHash("sha256")
-    .update(refreshToken)
-    .digest("hex");
+  const hashed = crypto.createHash("sha256").update(refreshToken).digest("hex");
 
   await User.updateOne(
     { refreshToken: hashed },
-    { $unset: { refreshToken: 1 } }
+    { $unset: { refreshToken: 1 } },
   );
 };
 
@@ -172,6 +177,13 @@ export const refreshTokenService = async (refreshToken) => {
     tokenVersion: user.tokenVersion,
   });
 
+  const hashedNew = crypto
+    .createHash("sha256")
+    .update(newRefreshToken)
+    .digest("hex");
+  user.refreshToken = hashedNew;
+  await user.save();
+
   return { newAccessToken, newRefreshToken };
 };
 
@@ -193,7 +205,6 @@ export const forgotPasswordService = async ({ email }) => {
   return { message: "RESET_OTP_SENT_SUCCESSFULLY" };
 };
 
-
 export const resetPasswordService = async ({ email, otp, newPassword }) => {
   const user = await User.findOne({ email }).select("+password");
 
@@ -201,23 +212,37 @@ export const resetPasswordService = async ({ email, otp, newPassword }) => {
     throw new AppError("USER_NOT_FOUND", 404);
   }
 
-  // OTP verify 
+  // OTP verify
   const isValid = await verifyOTP(email, otp);
   if (!isValid) {
     throw new AppError("INVALID_OR_EXPIRED_OTP", 400);
   }
 
-  // Naya password hash 
+  // new password hash
   const hashedPassword = await hashPassword(newPassword);
   user.password = hashedPassword;
 
-  // TokenVersion increment karo - purane tokens invalidate ho jayenge
+  // TokenVersion increment 
   user.tokenVersion += 1;
 
   await user.save();
 
-  // OTP delete 
+  // OTP delete
   await deleteOTP(email);
 
   return { message: "PASSWORD_RESET_SUCCESSFULLY" };
+};
+
+export const googleLoginService = async (user) => {
+const accessToken = generateAccessToken({ userId: user._id, tokenVersion: user.tokenVersion });
+const refreshToken = generateRefreshToken({ userId: user._id, tokenVersion: user.tokenVersion });
+
+  const hashedRefreshToken = crypto
+    .createHash("sha256")
+    .update(refreshToken)
+    .digest("hex");
+  user.refreshToken = hashedRefreshToken;
+  await user.save();
+
+  return { user, accessToken, refreshToken };
 };

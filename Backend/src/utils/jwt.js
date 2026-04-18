@@ -1,20 +1,20 @@
 import jwt from "jsonwebtoken";
 import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from "../config/env.js";
 
-export const generateAccessToken = (playload) => {
+export const generateAccessToken = (payload) => {
   return jwt.sign(
     {
-      ...playload,
+      ...payload,
     },
     ACCESS_TOKEN_SECRET,
     { expiresIn: "15m" },
   );
 };
 
-export const generateRefreshToken = (playload) => {
+export const generateRefreshToken = (payload) => {
   return jwt.sign(
     {
-      ...playload,
+      ...payload,
     },
     REFRESH_TOKEN_SECRET,
     { expiresIn: "7d" },

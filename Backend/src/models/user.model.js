@@ -16,7 +16,8 @@ const userSchema = new mongoose.Schema(
 
     password: {
       type: String,
-      required: true,
+      select: false,
+      default: null, 
     },
 
     isVerified: {
@@ -33,6 +34,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       select: false,
     },
+
+    googleId: {
+    type: String,
+    default: null,
+  },
+
   },
   { timestamps: true },
 );

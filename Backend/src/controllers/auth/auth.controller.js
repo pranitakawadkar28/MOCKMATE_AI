@@ -1,7 +1,8 @@
-import { REFRESH_TOKEN_SECRET } from "../../config/env.js";
+import { FRONTEND_URL } from "../../config/env.js";
 import { 
   forgotPasswordService,
   getMeService,
+  googleLoginService,
   loginService,
   logoutService,
   refreshTokenService,
@@ -133,5 +134,16 @@ export const resetPasswordController = async (req, res, next) => {
     });
   } catch (err) {
     next(err);
+  }
+};
+
+export const googleCallbackController = async (req, res, next) => {
+  try {
+    const { user, accessToken, refreshToken } = await googleLoginService(req.user);
+    setAuthCookies(res, accessToken, refreshToken);
+    
+    res.redirect(`${FRONTEND_URL}/dashboard`);
+  } catch (error) {
+    next(error);
   }
 };
