@@ -1,4 +1,6 @@
 import crypto from "crypto";
+import jwt from "jsonwebtoken"; 
+
 import { User } from "../../models/user.model.js";
 import { AppError } from "../../utils/AppError.js";
 import { sendOtpEmail } from "../../utils/emailSender.js";
@@ -10,6 +12,7 @@ import {
   getOTP,
   storeOTP,
 } from "../../utils/otpGenerator.js";
+import { REFRESH_TOKEN_SECRET } from "../../config/env.js";
 
 export const registerService = async ({ username, email, password }) => {
   if (!username || !email || !password) {
@@ -135,4 +138,38 @@ export const getMeService = async (userId) => {
   }
 
   return { user };
+};
+
+export const refreshTokenService = async (refreshToken) => {
+  if (!refreshToken) {
+    throw new AppError("REFRESH_TOKEN_MISSING", 401);
+  }
+
+  let decoded;
+  try {
+    decoded = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET);
+  } catch (err) {
+    throw new AppError("INVALID_OR_EXPIRED_REFRESH_TOKEN", 401);
+  }
+
+  const user = await User.findById(decoded.userId);
+  if (!user) {
+    throw new AppError("USER_NOT_FOUND", 404);
+  }
+
+  if (user.tokenVersion !== decoded.tokenVersion) {
+    throw new AppError("TOKEN_NO_LONGER_VALID", 401);
+  }
+
+  const newAccessToken = generateAccessToken({
+    userId: user._id,
+    tokenVersion: user.tokenVersion,
+  });
+
+  const newRefreshToken = generateRefreshToken({
+    userId: user._id,
+    tokenVersion: user.tokenVersion,
+  });
+
+  return { newAccessToken, newRefreshToken };
 };

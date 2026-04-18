@@ -1,7 +1,9 @@
+import { REFRESH_TOKEN_SECRET } from "../../config/env.js";
 import { 
   getMeService,
   loginService,
   logoutService,
+  refreshTokenService,
   registerService, 
   verifyOtpService 
 } from "../../services/auth/auth.service.js";
@@ -83,6 +85,23 @@ export const getMeController = async (req, res, next) => {
       data: {
         user: user.toJSON(),
       },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const refreshTokenController = async (req, res, next) => {
+  try {
+    const refreshToken = req.cookies?.refreshToken;
+
+    const { newAccessToken, newRefreshToken } = await refreshTokenService(refreshToken);
+
+    setAuthCookies(res, newAccessToken, newRefreshToken);
+
+    res.status(200).json({
+      success: true,
+      message: "TOKEN_REFRESHED_SUCCESSFULLY",
     });
   } catch (err) {
     next(err);

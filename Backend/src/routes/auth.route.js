@@ -10,6 +10,7 @@ import {
   getMeController,
   loginController,
   logoutController,
+  refreshTokenController,
   registerController,
   verifyOtpController,
 } from "../controllers/auth/auth.controller.js";
@@ -46,6 +47,11 @@ authRouter.get(
     "/me",
     authenticate,
     getMeController
-)
+);
+
+authRouter.post(
+    "/refresh-token", 
+    refreshTokenController
+);
 
 export default authRouter;
