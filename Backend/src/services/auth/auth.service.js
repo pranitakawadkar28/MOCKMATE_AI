@@ -70,10 +70,6 @@ export const verifyOtpService = async ({ email, otp }) => {
     throw new AppError("OTP_EXPIRED_OR_NOT_FOUND", 400);
   }
 
-  if (storedOtp !== otp) {
-    throw new AppError("INVALID_OTP", 400);
-  }
-
   // Timing-safe comparison (previous review se)
   if (!crypto.timingSafeEqual(Buffer.from(storedOtp), Buffer.from(otp))) {
     throw new AppError("INVALID_OTP", 400);
@@ -84,7 +80,7 @@ export const verifyOtpService = async ({ email, otp }) => {
 
   await deleteOTP(email);
 
-  return { message: "USER_VERIFIED_SUCCESSFULLY" };
+  return { user };
 };
 
 export const loginService = async ({ email, password }) => {

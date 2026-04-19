@@ -47,7 +47,6 @@ authRouter.post(
 
 authRouter.post(
     "/logout",
-    authenticate,
     logoutController
 );
 

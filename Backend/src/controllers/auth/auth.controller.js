@@ -1,14 +1,14 @@
 import { FRONTEND_URL } from "../../config/env.js";
-import { 
+import {
   forgotPasswordService,
   getMeService,
   googleLoginService,
   loginService,
   logoutService,
   refreshTokenService,
-  registerService, 
-  resetPasswordService, 
-  verifyOtpService 
+  registerService,
+  resetPasswordService,
+  verifyOtpService,
 } from "../../services/auth/auth.service.js";
 
 import { clearAuthCookies, setAuthCookies } from "../../utils/cookies.js";
@@ -33,9 +33,15 @@ export const verifyOtpController = async (req, res, next) => {
   try {
     const { email, otp } = req.body;
 
-    const result = await verifyOtpService({ email, otp });
+    const { user } = await verifyOtpService({ email, otp });
 
-    res.status(200).json(result);
+    res.status(200).json({
+      success: true,
+      message: "OTP_VERIFIED_SUCCESSFULLY",
+      data: {
+        user: user.toJSON(),
+      },
+    });
   } catch (error) {
     next(error);
   }
@@ -52,7 +58,7 @@ export const loginController = async (req, res, next) => {
       success: true,
       message: "USER_LOGGED_IN_SUCCESSFULLY",
       data: {
-        user: user.toJSON()
+        user: user.toJSON(),
       },
     });
   } catch (err) {
@@ -62,12 +68,11 @@ export const loginController = async (req, res, next) => {
 
 export const logoutController = async (req, res, next) => {
   try {
-    const accessToken = req.cookies?.accessToken;
-    const refreshToken = req.cookies?.refreshToken;
+    const refreshToken = req.cookies?.refreshToken; // ✅ sirf yeh kaafi hai
 
-    await logoutService(accessToken, refreshToken);
+    await logoutService(null, refreshToken);
 
-    clearAuthCookies(res); // cookies clear 
+    clearAuthCookies(res); // cookies clear
 
     res.status(200).json({
       success: true,
@@ -98,7 +103,8 @@ export const refreshTokenController = async (req, res, next) => {
   try {
     const refreshToken = req.cookies?.refreshToken;
 
-    const { newAccessToken, newRefreshToken } = await refreshTokenService(refreshToken);
+    const { newAccessToken, newRefreshToken } =
+      await refreshTokenService(refreshToken);
 
     setAuthCookies(res, newAccessToken, newRefreshToken);
 
@@ -139,9 +145,11 @@ export const resetPasswordController = async (req, res, next) => {
 
 export const googleCallbackController = async (req, res, next) => {
   try {
-    const { user, accessToken, refreshToken } = await googleLoginService(req.user);
+    const { user, accessToken, refreshToken } = await googleLoginService(
+      req.user,
+    );
     setAuthCookies(res, accessToken, refreshToken);
-    
+
     res.redirect(`${FRONTEND_URL}/dashboard`);
   } catch (error) {
     next(error);
