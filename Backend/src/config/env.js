@@ -17,6 +17,7 @@ const requiredEnvVars = [
   "GOOGLE_CALLBACK_URL",
   "NODE_ENV",
   "FRONTEND_URL",
+  "OPENROUTER_API_KEY",
 ];
 
 const missing = requiredEnvVars.filter((key) => !process.env[key]);
@@ -45,3 +46,5 @@ export const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 export const GOOGLE_CALLBACK_URL = process.env.GOOGLE_CALLBACK_URL;
+
+export const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
