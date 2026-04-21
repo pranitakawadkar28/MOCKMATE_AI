@@ -3,7 +3,10 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 
 import { errorHandler } from "./middlewares/error.middleware.js";
+
 import authRouter from "./routes/auth.route.js";
+import resumeRouter from "./routes/resume.route.js";
+
 import { FRONTEND_URL } from "./config/env.js";
 import passport from "./config/passport.js";
 
@@ -20,6 +23,7 @@ app.use(cors({
 app.use(passport.initialize());
 
 app.use("/api/auth", authRouter);
+app.use("/api/resume", resumeRouter);
 
 app.use(errorHandler);
 
