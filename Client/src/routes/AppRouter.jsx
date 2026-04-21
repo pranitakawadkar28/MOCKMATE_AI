@@ -2,13 +2,13 @@ import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router";
 import ProtectedRoute from "./ProtectedRoute";
 
-// ✅ Lazy imports
 const Login = lazy(() => import("../pages/Login"));
 const Register = lazy(() => import("../pages/Register"));
 const VerifyOtp = lazy(() => import("../pages/VerifyOtp"));
 const Dashboard = lazy(() => import("../pages/Dashboard"));
 const ForgotPassword = lazy(() => import("../pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("../pages/resetPassword"));
+const Home = lazy(() => import("../pages/Home"))
 
 const AppRouter = () => {
   return (
@@ -20,7 +20,7 @@ const AppRouter = () => {
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-
+        <Route path="/home" element={<Home />}/>
         <Route
           path="/dashboard"
           element={

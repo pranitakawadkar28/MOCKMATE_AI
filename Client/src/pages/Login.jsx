@@ -9,14 +9,16 @@ import { IoSparklesSharp } from "react-icons/io5";
 import { motion } from "motion/react";
 import { FcGoogle } from "react-icons/fc";
 
-const Login = () => {
+const Login = ({ isModel = false, switchAuth }) => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { loading, error, isAuthenticated } = useSelector((state) => state.auth);
+  const { loading, error, isAuthenticated } = useSelector(
+    (state) => state.auth,
+  );
 
   useEffect(() => {
     return () => {
@@ -26,7 +28,7 @@ const Login = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/dashboard");
+      if (!isModel) navigate("/dashboard");
     }
   }, [isAuthenticated, navigate]);
 
@@ -50,12 +52,18 @@ const Login = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#f3f3f3] flex items-center justify-center px-6 py-20">
+    <div
+      className={`
+    w-full ${isModel ? "py-4" : "min-h-screen bg-[#f3f3f3] flex items-center justify-center px-6 py-20"}
+    `}
+    >
       <motion.div
         initial={{ opacity: 0, y: -40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.05 }}
-        className="w-full max-w-md p-8 rounded-3xl bg-white shadow-2xl border border-gray-200"
+        className={`
+          w-full 
+          ${isModel ? "max-w-md p-8 rounded-3xl" : "max-w-lg p-12 rounded-[32px]"} bg-white shadow-2xl border border-gray-200`}
       >
         {/* Logo */}
         <div className="flex items-center justify-center gap-3 mb-6">
@@ -123,9 +131,7 @@ const Login = () => {
           </div>
 
           {/* API Error */}
-          {error && (
-            <p className="text-red-500 text-xs text-center">{error}</p>
-          )}
+          {error && <p className="text-red-500 text-xs text-center">{error}</p>}
 
           {/* Submit */}
           <motion.button
@@ -161,12 +167,21 @@ const Login = () => {
         {/* Register link */}
         <p className="text-center text-sm text-gray-500 mt-6">
           Don't have an account?{" "}
-          <Link
-            to="/register"
-            className="text-blue-600 font-medium hover:underline"
-          >
-            Sign up
-          </Link>
+          {isModel ? (
+            <button
+              onClick={switchAuth}
+              className="text-blue-600 font-medium hover:underline"
+            >
+              Sign up
+            </button>
+          ) : (
+            <Link
+              to="/register"
+              className="text-blue-600 font-medium hover:underline"
+            >
+              Sign up
+            </Link>
+          )}
         </p>
       </motion.div>
     </div>

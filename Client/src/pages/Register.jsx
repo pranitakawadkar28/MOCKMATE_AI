@@ -9,7 +9,7 @@ import { IoSparklesSharp } from "react-icons/io5";
 import { motion } from "motion/react";
 import { FcGoogle } from "react-icons/fc";
 
-const Register = () => {
+const Register = ({ isModel = false, switchAuth }) => {
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -31,7 +31,11 @@ const Register = () => {
 
   useEffect(() => {
     if (isRegistered) {
-      navigate(`/verify-otp?email=${form.email}`);
+      if (isModel) {
+        onClose?.();
+      } else {
+        navigate(`/verify-otp?email=${form.email}`);
+      }
     }
   }, [isRegistered, navigate, form.email]);
 
@@ -55,12 +59,18 @@ const Register = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#f3f3f3] flex items-center justify-center px-6 py-20">
+    <div
+      className={`
+    w-full ${isModel ? "py-4" : "min-h-screen bg-[#f3f3f3] flex items-center justify-center px-6 py-20"}
+    `}
+    >
       <motion.div
         initial={{ opacity: 0, y: -40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.05 }}
-        className="w-full max-w-md p-8 rounded-3xl bg-white shadow-2xl border border-gray-200"
+        className={`
+          w-full 
+          ${isModel ? "max-w-md p-8 rounded-3xl" : "max-w-lg p-12 rounded-[32px]"} bg-white shadow-2xl border border-gray-200`}
       >
         {/* Logo */}
         <div className="flex items-center justify-center gap-3 mb-6">
@@ -137,9 +147,7 @@ const Register = () => {
           </div>
 
           {/* API Error */}
-          {error && (
-            <p className="text-red-500 text-xs text-center">{error}</p>
-          )}
+          {error && <p className="text-red-500 text-xs text-center">{error}</p>}
 
           {/* Submit */}
           <motion.button
@@ -175,9 +183,21 @@ const Register = () => {
         {/* Login link */}
         <p className="text-center text-sm text-gray-500 mt-6">
           Already have an account?{" "}
-          <Link to="/login" className="text-blue-600 font-medium hover:underline">
-            Sign in
-          </Link>
+          {isModel ? (
+            <button
+              onClick={switchAuth}
+              className="text-blue-600 font-medium hover:underline"
+            >
+              Sign in
+            </button>
+          ) : (
+            <Link
+              to="/login"
+              className="text-blue-600 font-medium hover:underline"
+            >
+              Sign in
+            </Link>
+          )}
         </p>
       </motion.div>
     </div>
