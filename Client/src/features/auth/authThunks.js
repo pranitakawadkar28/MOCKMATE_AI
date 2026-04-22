@@ -54,7 +54,7 @@ export const forgotPassword = createAsyncThunk(
   "auth/password/forgot",
   async (email, thunkAPI) => {
     try {
-      await api.post("auth/Password/forgot", { email });
+      await api.post("auth/password/forgot", { email });
       return email; // ✅ email save karenge state mein
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response?.data?.message);

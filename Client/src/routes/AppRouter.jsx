@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router";
 import ProtectedRoute from "./ProtectedRoute";
+import InterviewPage from "../pages/InterviewPage";
 
 const Login = lazy(() => import("../pages/Login"));
 const Register = lazy(() => import("../pages/Register"));
@@ -21,6 +22,7 @@ const AppRouter = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/home" element={<Home />}/>
+        <Route path="/interview" element={<InterviewPage />}/>
         <Route
           path="/dashboard"
           element={

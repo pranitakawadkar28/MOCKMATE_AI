@@ -4,6 +4,6 @@ import { analyzeResumeController } from "../controllers/resume/resume.controller
 import { upload } from "../middlewares/multer.middleware.js"
 const resumeRouter = express.Router();
 
-resumeRouter.post("/resume", authenticate, upload.single("resume"), analyzeResumeController)
+resumeRouter.post("/", authenticate, upload.single("resume"), analyzeResumeController)
 
 export default resumeRouter;
