@@ -9,7 +9,7 @@ import { IoSparklesSharp } from "react-icons/io5";
 import { motion } from "motion/react";
 import { FcGoogle } from "react-icons/fc";
 
-const Register = ({ isModel = false, switchAuth }) => {
+const Register = ({ isModel = false, switchAuth, onClose }) => {
   const [form, setForm] = useState({
     username: "",
     email: "",

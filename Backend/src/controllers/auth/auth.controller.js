@@ -150,7 +150,7 @@ export const googleCallbackController = async (req, res, next) => {
     );
     setAuthCookies(res, accessToken, refreshToken);
 
-    res.redirect(`${FRONTEND_URL}/dashboard`);
+    res.redirect(`${FRONTEND_URL}/`);
   } catch (error) {
     next(error);
   }

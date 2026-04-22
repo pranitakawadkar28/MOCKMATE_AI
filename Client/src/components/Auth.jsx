@@ -27,7 +27,7 @@ const Auth = ({ onClose }) => {
         {isLogin ? (
           <Login isModel={true} switchAuth={() => setIsLogin(false)} />
         ) : (
-          <Register isModel={true} switchAuth={() => setIsLogin(true)} />
+          <Register isModel={true} switchAuth={() => setIsLogin(true)} onClose={onClose} />
         )}
 
       </div>

@@ -28,7 +28,7 @@ const Login = ({ isModel = false, switchAuth }) => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      if (!isModel) navigate("/dashboard");
+      if (!isModel) navigate("/");
     }
   }, [isAuthenticated, navigate]);
 

@@ -6,7 +6,7 @@ import { FaUserAstronaut } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { logout } from "../features/auth/authSlice";
-import Auth from '../components/Auth';
+import Auth from "../components/Auth";
 
 const Navbar = () => {
   const { user } = useSelector((state) => state.auth);
@@ -35,12 +35,12 @@ const Navbar = () => {
           <div className="relative">
             <button
               onClick={() => {
-                if(!user){
-                    setShowAuth(true)
-                    return;
+                if (!user) {
+                  setShowAuth(true);
+                  return;
                 }
-                setShowCreditPopUp(!showCreditPopUp)
-                setShowUserPopUp(false)
+                setShowCreditPopUp(!showCreditPopUp);
+                setShowUserPopUp(false);
               }}
               className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-full text-md hover:bg-gray-200 transition"
             >
@@ -66,41 +66,43 @@ const Navbar = () => {
           <div className="relative">
             <button
               onClick={() => {
-                if(!user){
-                    setShowAuth(true)
-                    return;
+                if (!user) {
+                  setShowAuth(true);
+                  return;
                 }
-                setShowUserPopUp(!showUserPopUp)
-                setShowCreditPopUp(false)
+                setShowUserPopUp(!showUserPopUp);
+                setShowCreditPopUp(false);
               }}
               className="w-9 h-9 bg-black text-white rounded-full flex items-center justify-center font-semibold"
             >
               {user ? (
-                user?.name.slice(0, 1).toUpperCase()
+                user?.username.slice(0, 1).toUpperCase()
               ) : (
                 <FaUserAstronaut size={16} />
               )}
             </button>
 
             {showUserPopUp && (
-              <div className="absolute right-0 mt-3 w-48 bg-white shadow-xl border border-gray-200 rounded-xl p-5 z-50">
+              <div className="absolute right-0 mt-3 w-64 bg-white shadow-xl border border-gray-200 rounded-xl p-5 z-50">
                 <p className="text-md text-blue-500 font-medium mb-1">
                   {user?.name}
                 </p>
+                <p className="text-xs text-gray-400 mb-3">{user?.email}</p>
                 <button
                   onClick={() => navigate("/history")}
                   className="w-full text-left text-sm py-2 hover:text-black text-gray-600"
                 >
                   Interview History
                 </button>
-                <button 
-                onClick={() => {
+                <button
+                  onClick={() => {
                     dispatch(logout());
-                    navigate("/login")
-                }}
-                className="w-full text-left text-sm py-2 flex items-center gap-2 text-red-500">
-                    <HiOutlineLogout size={16}/>
-                    logout
+                    navigate("/");
+                  }}
+                  className="w-full text-left text-sm py-2 flex items-center gap-2 text-red-500"
+                >
+                  <HiOutlineLogout size={16} />
+                  logout
                 </button>
               </div>
             )}
@@ -108,7 +110,7 @@ const Navbar = () => {
         </div>
       </motion.div>
 
-      {showAuth && <Auth onClose={() => setShowAuth(false)}/>}
+      {showAuth && <Auth onClose={() => setShowAuth(false)} />}
     </div>
   );
 };
