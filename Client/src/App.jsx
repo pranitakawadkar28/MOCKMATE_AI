@@ -6,9 +6,12 @@ import AppRouter from "./routes/AppRouter";
 const App = () => {
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(getMe()); // cookie hai toh user restore hoga
-  }, []);
+  // App.jsx me temporarily add karo
+useEffect(() => {
+    dispatch(getMe()).then((res) => {
+        console.log(res.payload)
+    });
+}, []);
 
   return <AppRouter />;
 };

@@ -17,17 +17,17 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       select: false,
-      default: null, 
+      default: null,
     },
 
     isVerified: {
       type: Boolean,
-      default: false
+      default: false,
     },
 
-    tokenVersion: { 
-      type: Number, 
-      default: 0 
+    tokenVersion: {
+      type: Number,
+      default: 0,
     },
 
     refreshToken: {
@@ -36,10 +36,14 @@ const userSchema = new mongoose.Schema(
     },
 
     googleId: {
-    type: String,
-    default: null,
-  },
+      type: String,
+      default: null,
+    },
 
+    credits: {
+      type: Number,
+      default: 100,
+    },
   },
   { timestamps: true },
 );

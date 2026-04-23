@@ -97,6 +97,7 @@ const Navbar = () => {
                 <button
                   onClick={() => {
                     dispatch(logout());
+                    setShowUserPopUp(false); 
                     navigate("/");
                   }}
                   className="w-full text-left text-sm py-2 flex items-center gap-2 text-red-500"
