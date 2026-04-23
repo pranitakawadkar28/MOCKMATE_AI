@@ -1,4 +1,4 @@
-import { generateQuestionService, submitAnswerService } from "../../services/interview/interview.service.js";
+import { finishInterviewService, generateQuestionService, submitAnswerService } from "../../services/interview/interview.service.js";
 
 export const generateQuestionController = async (req, res, next) => {
   try {
@@ -20,6 +20,18 @@ export const submitAnswerController = async (req, res, next) => {
       questionIndex: req.body.questionIndex,
       answer: req.body.answer,
       timeTaken: req.body.timeTaken,
+    });
+
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const finishInterviewController = async (req, res, next) => {
+  try {
+    const result = await finishInterviewService({
+      interviewId: req.body.interviewId,
     });
 
     res.status(200).json(result);
