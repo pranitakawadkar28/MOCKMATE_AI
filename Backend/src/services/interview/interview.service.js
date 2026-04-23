@@ -1,6 +1,7 @@
 import { User } from "../../models/user.model.js";
 import { Interview } from "../../models/interview.model.js";
 import { AppError } from "../../utils/AppError.js";
+import { openai } from "../../config/openai.js";
 
 export const generateQuestionService = async ({
   userId,
@@ -52,7 +53,32 @@ Resume:${safeResume}
   const messages = [
     {
       role: "system",
-      content: `Generate 5 interview questions based on input.`,
+      content: `
+You are a real human interviewer conducting a professional interview.
+
+Speak in simple, natural English as if you are directly talking to the candidate.
+
+Generate exactly 5 interview questions.
+
+Strict Rules:
+- Each question must contain between 15 and 25 words.
+- Each question must be a single complete sentence.
+- Do NOT number them.
+- Do NOT add explanations.
+- Do NOT add extra text before or after.
+- One question per line only.
+- Keep language simple and conversational.
+- Questions must feel practical and realistic.
+
+Difficulty progression:
+Question 1 → easy  
+Question 2 → easy  
+Question 3 → medium  
+Question 4 → medium  
+Question 5 → hard  
+
+Make questions based on the candidate’s role, experience,interviewMode, projects, skills, and resume details.
+`,
     },
     {
       role: "user",
@@ -67,7 +93,7 @@ Resume:${safeResume}
   }
 
   const questionsArray = openaiResponse
-    .split("\n") 
+    .split("\n")
     .map((q) => q.trim())
     .filter((q) => q.length > 0)
     .slice(0, 5);
@@ -76,7 +102,7 @@ Resume:${safeResume}
     throw new AppError("AI_FAILED_TO_GENERATE_QUESTIONS", 500);
   }
 
-  user.credits -= 50; 
+  user.credits -= 50;
   await user.save();
 
   const interview = await Interview.create({
@@ -88,7 +114,7 @@ Resume:${safeResume}
     questions: questionsArray.map((q, index) => ({
       question: q,
       difficulty: ["easy", "easy", "medium", "medium", "hard"][index],
-      timeLimit: [60, 60, 90, 90, 120][index], 
+      timeLimit: [60, 60, 90, 90, 120][index],
     })),
   });
 
@@ -97,5 +123,125 @@ Resume:${safeResume}
     creditsLeft: user.credits,
     userName: user.name,
     questions: interview.questions,
+  };
+};
+
+export const submitAnswerService = async ({
+  interviewId,
+  questionIndex,
+  answer,
+  timeTaken,
+}) => {
+  const interview = await Interview.findById(interviewId);
+
+  if (!interview) {
+    throw new AppError("INTERVIEW_NOT_FOUND", 404);
+  }
+
+  const question = interview.questions[questionIndex];
+
+  if (!question) {
+    throw new AppError("QUESTION_NOT_FOUND", 404);
+  }
+
+  if (!answer) {
+    question.score = 0;
+    question.feedback = "You did not submit an answer.";
+    question.answer = "";
+
+    await interview.save();
+
+    return { feedback: question.feedback };
+  }
+
+  if (timeTaken > question.timeLimit) {
+    question.score = 0;
+    question.feedback = "Time limit exceeded. Answer not evaluated.";
+    question.answer = answer;
+
+    await interview.save();
+
+    return { feedback: question.feedback };
+  }
+
+  const messages = [
+    {
+      role: "system",
+      content: `
+You are a professional human interviewer evaluating a candidate's answer in a real interview.
+
+Evaluate naturally and fairly, like a real person would.
+
+Score the answer in these areas (0 to 10):
+
+1. Confidence – Does the answer sound clear, confident, and well-presented?
+2. Communication – Is the language simple, clear, and easy to understand?
+3. Correctness – Is the answer accurate, relevant, and complete?
+
+Rules:
+- Be realistic and unbiased.
+- Do not give random high scores.
+- If the answer is weak, score low.
+- If the answer is strong and detailed, score high.
+- Consider clarity, structure, and relevance.
+
+Calculate:
+finalScore = average of confidence, communication, and correctness (rounded to nearest whole number).
+
+Feedback Rules:
+- Write natural human feedback.
+- 10 to 15 words only.
+- Sound like real interview feedback.
+- Can suggest improvement if needed.
+- Do NOT repeat the question.
+- Do NOT explain scoring.
+- Keep tone professional and honest.
+
+Return ONLY valid JSON in this format:
+
+{
+  "confidence": number,
+  "communication": number,
+  "correctness": number,
+  "finalScore": number,
+  "feedback": "short human feedback"
+}
+`,
+    },
+    {
+      role: "user",
+      content: `
+Question: ${question.question}
+Answer: ${answer}
+`,
+    },
+  ];
+
+  const openaiResponse = await openai(messages);
+
+  if (!openaiResponse) {
+    throw new AppError("AI_RESPONSE_EMPTY", 500);
+  }
+
+  let parsed;
+
+  try {
+    parsed = JSON.parse(openaiResponse);
+  } catch (err) {
+    throw new AppError("AI_INVALID_JSON_RESPONSE", 500);
+  }
+
+  question.answer = answer;
+  question.confidence = parsed.confidence;
+  question.communication = parsed.communication;
+  question.correctness = parsed.correctness;
+  question.score = parsed.finalScore;
+  question.feedback = parsed.feedback;
+
+  await interview.save();
+
+  return {
+    feedback: parsed.feedback,
+    score: parsed.finalScore,
   };
 };
