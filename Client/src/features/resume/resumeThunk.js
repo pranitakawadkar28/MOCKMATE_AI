@@ -8,7 +8,7 @@ export const analyzeResume = createAsyncThunk(
       const formdata = new FormData();
       formdata.append("resume", file);
 
-      const res = await api.post("/resume", formdata);
+      const res = await api.post("/resume/", formdata);
       return res.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response?.data?.message);

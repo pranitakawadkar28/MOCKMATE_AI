@@ -13,17 +13,23 @@ import {
 const Step1SetUp = ({ onStart }) => {
   const dispatch = useDispatch();
   const { projects, skills, analyzing, analysisDone, error } = useSelector(
-    (state) => state.resume
+    (state) => state.resume,
   );
+
+  const { loading } = useSelector((state) => state.interview);
 
   const [role, setRole] = useState("");
   const [experience, setExperience] = useState("");
   const [mode, setMode] = useState("Technical");
   const [resumeFile, setResumeFile] = useState(null);
 
-  const handleUploadResume = async () => {
+  const handleUploadResume = () => {
     if (!resumeFile || analyzing) return;
     dispatch(analyzeResume(resumeFile));
+  };
+
+  const handleStart = () => {
+    onStart({ role, experience, mode, skills, projects });
   };
 
   return (
@@ -34,6 +40,7 @@ const Step1SetUp = ({ onStart }) => {
       className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 px-4"
     >
       <div className="w-full max-w-6xl bg-white rounded-3xl shadow-2xl grid md:grid-cols-2 overflow-hidden">
+        {/* Left panel */}
         <motion.div
           initial={{ x: -80, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
@@ -78,6 +85,7 @@ const Step1SetUp = ({ onStart }) => {
           </div>
         </motion.div>
 
+        {/* Right panel */}
         <motion.div
           initial={{ x: 80, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
@@ -135,7 +143,9 @@ const Step1SetUp = ({ onStart }) => {
                   onChange={(e) => setResumeFile(e.target.files[0])}
                 />
                 <p className="text-gray-600 font-medium">
-                  {resumeFile ? resumeFile.name : "Click to upload resume (Optional)"}
+                  {resumeFile
+                    ? resumeFile.name
+                    : "Click to upload resume (Optional)"}
                 </p>
 
                 {resumeFile && (
@@ -151,9 +161,7 @@ const Step1SetUp = ({ onStart }) => {
                   </motion.button>
                 )}
 
-                {error && (
-                  <p className="text-red-500 text-sm mt-2">{error}</p>
-                )}
+                {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
               </motion.div>
             )}
 
@@ -197,13 +205,16 @@ const Step1SetUp = ({ onStart }) => {
             )}
 
             <motion.button
-              disabled={!role || !experience}
+              onClick={handleStart}
+              disabled={!role || !experience || loading}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => onStart({ role, experience, mode, skills, projects })}
+              onClick={() =>
+                onStart({ role, experience, mode, skills, projects })
+              }
               className="w-full disabled:bg-gray-400 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-full text-lg font-semibold transition duration-300 shadow-md mt-10"
             >
-              Start Interview
+              {loading ? "Starting..." : "Start Interview"}
             </motion.button>
           </div>
         </motion.div>

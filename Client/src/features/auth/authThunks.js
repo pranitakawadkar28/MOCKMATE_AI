@@ -24,7 +24,6 @@ export const verifyOtp = createAsyncThunk(
         otp,
       });
 
-      // 🔥 assume backend login kar deta hai (tokens set)
       return res.data.data.user;
 
     } catch (err) {
@@ -41,7 +40,7 @@ export const loginUser = createAsyncThunk(
     try {
       const res = await api.post("/auth/login", data);
 
-      return res.data.data.user; // ✅ user return
+      return res.data.data.user;
     } catch (err) {
       return thunkAPI.rejectWithValue(
         err.response?.data?.message
@@ -55,7 +54,7 @@ export const forgotPassword = createAsyncThunk(
   async (email, thunkAPI) => {
     try {
       await api.post("auth/password/forgot", { email });
-      return email; // ✅ email save karenge state mein
+      return email;
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response?.data?.message);
     }
@@ -63,7 +62,7 @@ export const forgotPassword = createAsyncThunk(
 );
 
 export const resetPassword = createAsyncThunk(
-  "auth/Password/reset",
+  "auth/password/reset",
   async (data, thunkAPI) => {
     try {
       await api.post("/auth/password/reset", data);
@@ -91,7 +90,6 @@ export const logoutUser = createAsyncThunk(
     try {
       await api.post("/auth/logout");
     } catch (err) {
-      // silently fail, local state toh clear hoga hi
     }
   }
 );
