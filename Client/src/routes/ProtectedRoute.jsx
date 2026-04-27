@@ -1,16 +1,16 @@
 import { useSelector } from "react-redux";
-import { Navigate } from "react-router";
+import { Navigate, Outlet } from "react-router";
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = () => {
   const { isAuthenticated, loading } = useSelector((state) => state.auth);
 
-  if (loading) return <div>Loading...</div>; // getMe pending hai
+  if (loading) return <div>Loading...</div>; 
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" replace />;
   }
 
-  return children;
+  return <Outlet />;
 };
 
 export default ProtectedRoute;

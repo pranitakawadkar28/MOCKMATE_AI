@@ -36,3 +36,27 @@ export const finishInterview = createAsyncThunk(
     }
   }
 );
+
+export const getMyInterview = createAsyncThunk(
+  "interview/getMy",
+  async (data, thunkAPI) => {
+    try {
+      const res = await api.post("/interview/my-interview", data);
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
+    }
+  }
+);
+
+export const getInterviewReport = createAsyncThunk(
+  "interview/report",
+  async (data, thunkAPI) => {
+    try {
+      const res = await api.post("/interview/report/:id", data);
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
+    }
+  }
+);
