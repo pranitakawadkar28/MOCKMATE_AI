@@ -1,9 +1,9 @@
-import { finishInterviewService, generateQuestionService, submitAnswerService } from "../../services/interview/interview.service.js";
+import { finishInterviewService, generateQuestionService, getLatestInterviewByUser, submitAnswerService } from "../../services/interview/interview.service.js";
 
 export const generateQuestionController = async (req, res, next) => {
   try {
     const result = await generateQuestionService({
-      userId: req.user.userId, // ✅ req.userId → req.user.userId
+      userId: req.user.userId, 
 
       ...req.body,
     });
@@ -38,5 +38,23 @@ export const finishInterviewController = async (req, res, next) => {
     res.status(200).json(result);
   } catch (error) {
     next(error);
+  }
+};
+
+export const getMyInterviewController = async (req, res) => {
+  try {
+    const interview = await getLatestInterviewByUser(req.userId);
+
+    if (!interview) {
+      return res.status(404).json({
+        message: "No interview found",
+      });
+    }
+
+    return res.status(200).json(interview);
+  } catch (error) {
+    return res.status(500).json({
+      message: `Failed to get interview: ${error.message}`,
+    });
   }
 };

@@ -298,3 +298,15 @@ export const finishInterviewService = async ({ interviewId }) => {
     })),
   };
 };
+
+export const getLatestInterviewByUser = async (userId) => {
+  try {
+    const interview = await Interview.findOne({ userId })
+      .sort({ createdAt: -1 })
+      .select("role experience mode finalScore status createdAt");
+
+    return interview;
+  } catch (error) {
+    throw new Error(`Service error: ${error.message}`);
+  }
+};
