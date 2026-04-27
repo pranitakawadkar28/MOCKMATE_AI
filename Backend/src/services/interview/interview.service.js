@@ -268,15 +268,11 @@ export const finishInterviewService = async ({ interviewId }) => {
   });
 
   const finalScore = totalQuestions ? totalScore / totalQuestions : 0;
-  const avgConfidence = totalQuestions
-    ? totalConfidence / totalQuestions
-    : 0;
+  const avgConfidence = totalQuestions ? totalConfidence / totalQuestions : 0;
   const avgCommunication = totalQuestions
     ? totalCommunication / totalQuestions
     : 0;
-  const avgCorrectness = totalQuestions
-    ? totalCorrectness / totalQuestions
-    : 0;
+  const avgCorrectness = totalQuestions ? totalCorrectness / totalQuestions : 0;
 
   interview.finalScore = Number(finalScore.toFixed(1));
   interview.status = "completed";
@@ -300,13 +296,43 @@ export const finishInterviewService = async ({ interviewId }) => {
 };
 
 export const getLatestInterviewByUser = async (userId) => {
-  try {
-    const interview = await Interview.findOne({ userId })
-      .sort({ createdAt: -1 })
-      .select("role experience mode finalScore status createdAt");
+  const interview = await Interview.findOne({ userId })
+    .sort({ createdAt: -1 })
+    .select("role experience mode finalScore status createdAt");
 
-    return interview;
-  } catch (error) {
-    throw new Error(`Service error: ${error.message}`);
+  return interview;
+};
+
+export const getInterviewReport = async (interviewId) => {
+  const interview = await Interview.findById(interviewId);
+
+  if (!interview) {
+    throw new AppError("Interview not found", 404);
   }
+
+  const totalQuestions = interview.questions.length;
+
+  let totalConfidence = 0;
+  let totalCommunication = 0;
+  let totalCorrectness = 0;
+
+  interview.questions.forEach((q) => {
+    totalConfidence += q.confidence || 0;
+    totalCommunication += q.communication || 0;
+    totalCorrectness += q.correctness || 0;
+  });
+
+  const avgConfidence = totalQuestions ? totalConfidence / totalQuestions : 0;
+  const avgCommunication = totalQuestions
+    ? totalCommunication / totalQuestions
+    : 0;
+  const avgCorrectness = totalQuestions ? totalCorrectness / totalQuestions : 0;
+
+  return {
+    finalScore: interview.finalScore,
+    confidence: Number(avgConfidence.toFixed(1)),
+    communication: Number(avgCommunication.toFixed(1)),
+    correctness: Number(avgCorrectness.toFixed(1)),
+    questionWiseScore: interview.questions,
+  };
 };

@@ -1,4 +1,4 @@
-import { finishInterviewService, generateQuestionService, getLatestInterviewByUser, submitAnswerService } from "../../services/interview/interview.service.js";
+import { finishInterviewService, generateQuestionService, getInterviewReport, getLatestInterviewByUser, submitAnswerService } from "../../services/interview/interview.service.js";
 
 export const generateQuestionController = async (req, res, next) => {
   try {
@@ -55,6 +55,18 @@ export const getMyInterviewController = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: `Failed to get interview: ${error.message}`,
+    });
+  }
+};
+
+export const getInterviewReportController = async (req, res) => {
+  try {
+    const report = await getInterviewReport(req.params.id);
+
+    return res.status(200).json(report);
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({
+      message: error.message,
     });
   }
 };
