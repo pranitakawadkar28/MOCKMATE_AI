@@ -109,7 +109,7 @@ Make questions based on the candidate’s role, experience,interviewMode, projec
     userId: user._id,
     role,
     experience,
-    mode,
+    model: mode,
     resumeText: safeResume,
     questions: questionsArray.map((q, index) => ({
       question: q,
@@ -121,7 +121,7 @@ Make questions based on the candidate’s role, experience,interviewMode, projec
   return {
     interviewId: interview._id,
     creditsLeft: user.credits,
-    userName: user.name,
+    userName: user.username,
     questions: interview.questions,
   };
 };

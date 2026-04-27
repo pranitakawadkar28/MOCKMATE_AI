@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { generateQuestions } from "./interviewThunks";
-
+import { generateQuestions, submitAnswer, finishInterview } from "./interviewThunks";
 const initialState = {
   questions: [],
   currentQuestionIndex: 0,
@@ -8,6 +7,8 @@ const initialState = {
   loading: false,
   error: null,
   interviewDone: false,
+  feedback: null,
+  result: null,
 };
 
 const interviewSlice = createSlice({
@@ -28,6 +29,8 @@ const interviewSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+
+    // generate Question
       .addCase(generateQuestions.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -40,7 +43,34 @@ const interviewSlice = createSlice({
       .addCase(generateQuestions.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+
+      // Submit Answer
+    .addCase(submitAnswer.pending, (state) => {
+      state.loading = true;
+    })
+    .addCase(submitAnswer.fulfilled, (state, action) => {
+      state.loading = false;
+      state.feedback = action.payload.feedback;
+    })
+    .addCase(submitAnswer.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    })
+
+    // Finish Interview
+    .addCase(finishInterview.pending, (state) => {
+      state.loading = true;
+    })
+    .addCase(finishInterview.fulfilled, (state, action) => {
+      state.loading = false;
+      state.interviewDone = true;
+      state.result = action.payload;
+    })
+    .addCase(finishInterview.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    });
   },
 });
 

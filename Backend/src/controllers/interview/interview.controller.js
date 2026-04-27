@@ -3,7 +3,8 @@ import { finishInterviewService, generateQuestionService, submitAnswerService } 
 export const generateQuestionController = async (req, res, next) => {
   try {
     const result = await generateQuestionService({
-      userId: req.userId,
+      userId: req.user.userId, // ✅ req.userId → req.user.userId
+
       ...req.body,
     });
 

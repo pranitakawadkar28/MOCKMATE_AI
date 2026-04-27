@@ -10,6 +10,8 @@ const InterviewPage = () => {
     <div className='min-h-screen bg-gray-50'>
         { step===1 && (
             <Step1SetUp onStart={(data) => {
+                    console.log("Data from Step1:", data); // ✅ ye add karo
+
                 setInterviewData(data);
                 setStep(2)
             }}/>
@@ -19,7 +21,7 @@ const InterviewPage = () => {
             <Step2Interview  interviewData={interviewData}
             onFinish={(report) => {
                 setInterviewData(report);
-                setStep(2)
+                setStep(3)
             }}/>
         )}
 

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion } from "motion/react";
 import { useDispatch, useSelector } from "react-redux";
 import { analyzeResume } from "../features/resume/resumeThunk";
+import { generateQuestions } from "../features/interview/interviewThunks"; // ✅ add karo
 import {
   FaUserTie,
   FaBriefcase,
@@ -15,7 +16,6 @@ const Step1SetUp = ({ onStart }) => {
   const { projects, skills, analyzing, analysisDone, error } = useSelector(
     (state) => state.resume,
   );
-
   const { loading } = useSelector((state) => state.interview);
 
   const [role, setRole] = useState("");
@@ -28,8 +28,27 @@ const Step1SetUp = ({ onStart }) => {
     dispatch(analyzeResume(resumeFile));
   };
 
-  const handleStart = () => {
-    onStart({ role, experience, mode, skills, projects });
+  // ✅ Yahan fix hai — generateQuestions dispatch karo, response onStart ko do
+  const handleStart = async () => {
+    if (!role || !experience || loading) return;
+
+    try {
+      const result = await dispatch(
+        generateQuestions({ role, experience, mode, skills, projects })
+      ).unwrap();
+
+      // result mein interviewId aur questions hone chahiye backend se
+      onStart({
+        interviewId: result.interviewId,
+        questions: result.questions,
+        userName: role, // ya koi aur name field
+        role,
+        experience,
+        mode,
+      });
+    } catch (err) {
+      console.error("Failed to generate questions:", err);
+    }
   };
 
   return (
@@ -204,14 +223,12 @@ const Step1SetUp = ({ onStart }) => {
               </motion.div>
             )}
 
+            {/* ✅ duplicate onClick hata diya, sirf handleStart hai */}
             <motion.button
               onClick={handleStart}
               disabled={!role || !experience || loading}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() =>
-                onStart({ role, experience, mode, skills, projects })
-              }
               className="w-full disabled:bg-gray-400 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-full text-lg font-semibold transition duration-300 shadow-md mt-10"
             >
               {loading ? "Starting..." : "Start Interview"}

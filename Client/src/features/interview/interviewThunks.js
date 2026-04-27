@@ -12,3 +12,27 @@ export const generateQuestions = createAsyncThunk(
     }
   },
 );
+
+export const submitAnswer = createAsyncThunk(
+  "interview/submitAnswer",
+  async (data, thunkAPI) => {
+    try {
+      const res = await api.post("/interview/submit-answer", data);
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
+    }
+  }
+);
+
+export const finishInterview = createAsyncThunk(
+  "interview/finish",
+  async (data, thunkAPI) => {
+    try {
+      const res = await api.post("/interview/finish", data);
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
+    }
+  }
+);
