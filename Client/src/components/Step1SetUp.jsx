@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion } from "motion/react";
 import { useDispatch, useSelector } from "react-redux";
 import { analyzeResume } from "../features/resume/resumeThunk";
-import { generateQuestions } from "../features/interview/interviewThunks"; // ✅ add karo
+import { generateQuestions } from "../features/interview/interviewThunks"; 
 import {
   FaUserTie,
   FaBriefcase,
@@ -28,7 +28,6 @@ const Step1SetUp = ({ onStart }) => {
     dispatch(analyzeResume(resumeFile));
   };
 
-  // ✅ Yahan fix hai — generateQuestions dispatch karo, response onStart ko do
   const handleStart = async () => {
     if (!role || !experience || loading) return;
 
@@ -37,11 +36,10 @@ const Step1SetUp = ({ onStart }) => {
         generateQuestions({ role, experience, mode, skills, projects })
       ).unwrap();
 
-      // result mein interviewId aur questions hone chahiye backend se
       onStart({
         interviewId: result.interviewId,
         questions: result.questions,
-        userName: role, // ya koi aur name field
+        userName: role,
         role,
         experience,
         mode,
@@ -223,7 +221,6 @@ const Step1SetUp = ({ onStart }) => {
               </motion.div>
             )}
 
-            {/* ✅ duplicate onClick hata diya, sirf handleStart hai */}
             <motion.button
               onClick={handleStart}
               disabled={!role || !experience || loading}

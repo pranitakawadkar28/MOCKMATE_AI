@@ -41,7 +41,7 @@ api.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError);
 
-        // ✅ Dynamic import — circular dependency fix
+        // Dynamic import — circular dependency fix
         const { store } = await import("../app/store");
         const { logout } = await import("../features/auth/authSlice");
         store.dispatch(logout());

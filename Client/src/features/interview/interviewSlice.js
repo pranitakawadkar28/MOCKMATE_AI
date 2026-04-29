@@ -1,5 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { generateQuestions, submitAnswer, finishInterview } from "./interviewThunks";
+import {
+  generateQuestions,
+  submitAnswer,
+  finishInterview,
+  getMyInterview,       
+  getInterviewReport, 
+} from "./interviewThunks";
 const initialState = {
   questions: [],
   currentQuestionIndex: 0,
@@ -9,6 +15,8 @@ const initialState = {
   interviewDone: false,
   feedback: null,
   result: null,
+  interviews: [],
+  report: null,
 };
 
 const interviewSlice = createSlice({
@@ -30,7 +38,7 @@ const interviewSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
-    // generate Question
+      // generate Question
       .addCase(generateQuestions.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -46,33 +54,61 @@ const interviewSlice = createSlice({
       })
 
       // Submit Answer
-    .addCase(submitAnswer.pending, (state) => {
-      state.loading = true;
-    })
-    .addCase(submitAnswer.fulfilled, (state, action) => {
-      state.loading = false;
-      state.feedback = action.payload.feedback;
-    })
-    .addCase(submitAnswer.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    })
+      .addCase(submitAnswer.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(submitAnswer.fulfilled, (state, action) => {
+        state.loading = false;
+        state.feedback = action.payload.feedback;
+      })
+      .addCase(submitAnswer.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
 
-    // Finish Interview
-    .addCase(finishInterview.pending, (state) => {
-      state.loading = true;
-    })
-    .addCase(finishInterview.fulfilled, (state, action) => {
-      state.loading = false;
-      state.interviewDone = true;
-      state.result = action.payload;
-    })
-    .addCase(finishInterview.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    });
+      // Finish Interview
+      .addCase(finishInterview.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(finishInterview.fulfilled, (state, action) => {
+        state.loading = false;
+        state.interviewDone = true;
+        state.result = action.payload;
+      })
+      .addCase(finishInterview.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // getMyInterview
+      .addCase(getMyInterview.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getMyInterview.fulfilled, (state, action) => {
+        state.loading = false;
+        state.interviews = [];
+        state.interviews = action.payload;
+      })
+      .addCase(getMyInterview.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // getInterviewReport
+      .addCase(getInterviewReport.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getInterviewReport.fulfilled, (state, action) => {
+        state.loading = false;
+        state.result = action.payload;
+      })
+      .addCase(getInterviewReport.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 
-export const { nextQuestion, saveAnswer, resetInterview } = interviewSlice.actions;
+export const { nextQuestion, saveAnswer, resetInterview } =
+  interviewSlice.actions;
 export default interviewSlice.reducer;

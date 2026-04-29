@@ -43,15 +43,15 @@ export const finishInterviewController = async (req, res, next) => {
 
 export const getMyInterviewController = async (req, res) => {
   try {
-    const interview = await getLatestInterviewByUser(req.userId);
+    const interviews = await getLatestInterviewByUser(req.user.userId);
 
-    if (!interview) {
+    if (!interviews || interviews.length === 0) {
       return res.status(404).json({
         message: "No interview found",
       });
     }
 
-    return res.status(200).json(interview);
+    return res.status(200).json(interviews);
   } catch (error) {
     return res.status(500).json({
       message: `Failed to get interview: ${error.message}`,

@@ -296,7 +296,7 @@ export const finishInterviewService = async ({ interviewId }) => {
 };
 
 export const getLatestInterviewByUser = async (userId) => {
-  const interview = await Interview.findOne({ userId })
+  const interview = await Interview.find({ userId })
     .sort({ createdAt: -1 })
     .select("role experience mode finalScore status createdAt");
 

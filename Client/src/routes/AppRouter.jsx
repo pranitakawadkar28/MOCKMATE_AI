@@ -30,7 +30,7 @@ const AppRouter = () => {
         <Route element={<ProtectedRoute />}>
           <Route path="/interview" element={<InterviewPage />} />
           <Route path="/history" element={<InterviewHistory />} />
-          <Route path="/report" element={<InterviewReport />} />
+          <Route path="/report/:id" element={<InterviewReport />} />
         </Route>
       </Routes>
     </Suspense>

@@ -38,7 +38,7 @@ if (!interviewData || !Array.isArray(interviewData.questions) || interviewData.q
   const videoRef = useRef(null);
   const currentQuestion = questions[currentIndex];
 
-  // ─── Load Voices ───────────────────────────────────────────────
+  // ──────────────────────────── Load Voices ───────────────────────────────
   useEffect(() => {
     const loadVoices = () => {
       const voices = window.speechSynthesis.getVoices();
@@ -81,7 +81,7 @@ if (!interviewData || !Array.isArray(interviewData.questions) || interviewData.q
 
   const videoSource = voiceGender === "female" ? FemaleVideo : maleVideo;
 
-  // ─── Speak Function ────────────────────────────────────────────
+  // ──────────────────────────────────── Speak Function ─────────────────────────────────────
   const speakText = (text) => {
     return new Promise((resolve) => {
       if (!window.speechSynthesis || !selectedVoice) {
@@ -125,7 +125,7 @@ if (!interviewData || !Array.isArray(interviewData.questions) || interviewData.q
     });
   };
 
-  // ─── Intro + Question Speaking ─────────────────────────────────
+  // ───────────────────────────── Intro + Question Speaking ─────────────────────────────────
   useEffect(() => {
     if (!selectedVoice) return;
 
@@ -156,8 +156,7 @@ if (!interviewData || !Array.isArray(interviewData.questions) || interviewData.q
     runIntro();
   }, [selectedVoice, isIntroPhase, currentIndex]);
 
-  // ─── Timer ─────────────────────────────────────────────────────
-  // ✅ Fix #3: merged reset + interval, paused during submission/feedback
+  // ────────────────────────────────── Timer ───────────────────────────────────────────────
   useEffect(() => {
     if (isIntroPhase || !currentQuestion || isSubmitting || feedback) return;
 
@@ -176,7 +175,7 @@ if (!interviewData || !Array.isArray(interviewData.questions) || interviewData.q
     return () => clearInterval(timer);
   }, [isIntroPhase, currentIndex, isSubmitting, feedback]);
 
-  // ─── Speech Recognition Setup ──────────────────────────────────
+  // ─────────────────────────────── Speech Recognition Setup ──────────────────────────────────
   useEffect(() => {
     if (!("webkitSpeechRecognition" in window)) return;
 
@@ -193,7 +192,7 @@ if (!interviewData || !Array.isArray(interviewData.questions) || interviewData.q
     recognitionRef.current = recognition;
   }, []);
 
-  // ─── Mic Controls ──────────────────────────────────────────────
+  // ─────────────────────────────── Mic Controls ──────────────────────────────────────────────
   const startMic = () => {
     if (recognitionRef.current && !isAIPlaying) {
       try {
@@ -208,7 +207,6 @@ if (!interviewData || !Array.isArray(interviewData.questions) || interviewData.q
     }
   };
 
-  // ✅ Fix #1: keep ref in sync with state
   const toggleMic = () => {
     const next = !isMicOn;
     setIsMicOn(next);
@@ -216,7 +214,7 @@ if (!interviewData || !Array.isArray(interviewData.questions) || interviewData.q
     next ? startMic() : stopMic();
   };
 
-  // ─── Submit Answer ─────────────────────────────────────────────
+  // ──────────────────────────────── Submit Answer ──────────────────────────────────────
   const handleSubmitAnswer = async () => {
     if (isSubmitting) return;
     stopMic();
@@ -241,7 +239,7 @@ if (!interviewData || !Array.isArray(interviewData.questions) || interviewData.q
     }
   };
 
-  // ─── Next Question ─────────────────────────────────────────────
+  // ───────────────────────────────── Next Question ─────────────────────────────────────
   const handleNext = async () => {
     setAnswer("");
     setFeedback("");
@@ -256,7 +254,7 @@ if (!interviewData || !Array.isArray(interviewData.questions) || interviewData.q
     setCurrentIndex((prev) => prev + 1);
   };
 
-  // ─── Finish Interview ──────────────────────────────────────────
+  // ──────────────────────────────── Finish Interview ─────────────────────────────────────
   const handleFinishInterview = async () => {
     stopMic();
     setIsMicOn(false);
@@ -269,8 +267,7 @@ if (!interviewData || !Array.isArray(interviewData.questions) || interviewData.q
     }
   };
 
-  // ─── Auto-submit on timeout ────────────────────────────────────
-  // ✅ Fix #2: proper deps so closure is never stale
+  // ──────────────────────────────── Auto-submit on timeout ──────────────────────────────────
   useEffect(() => {
     if (isIntroPhase || !currentQuestion) return;
     if (timeLeft === 0 && !isSubmitting && !feedback) {
@@ -278,7 +275,7 @@ if (!interviewData || !Array.isArray(interviewData.questions) || interviewData.q
     }
   }, [timeLeft, isIntroPhase, isSubmitting, feedback]);
 
-  // ─── Cleanup ───────────────────────────────────────────────────
+  // ───────────────────────────────── Cleanup ────────────────────────────────
   useEffect(() => {
     return () => {
       recognitionRef.current?.stop();
@@ -287,7 +284,7 @@ if (!interviewData || !Array.isArray(interviewData.questions) || interviewData.q
     };
   }, []);
 
-  // ─── Render ────────────────────────────────────────────────────
+  // ───────────────────────────────── Render ───────────────────────────────────
   return (
     <div className="min-h-screen bg-linear-to-br from-emerald-50 via-white to-teal-100 flex items-center justify-center p-4 sm:p-6">
       <div className="w-full lg:w-350 min-h-[80vh] bg-white rounded-3xl shadow-2xl border border-gray-200 flex flex-col lg:flex-row overflow-hidden">
