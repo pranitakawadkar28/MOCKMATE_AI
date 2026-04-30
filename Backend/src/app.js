@@ -10,6 +10,7 @@ import resumeRouter from "./routes/resume.route.js";
 
 import { FRONTEND_URL } from "./config/env.js";
 import passport from "./config/passport.js";
+import paymentRouter from "./routes/payment.route.js";
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use(passport.initialize());
 app.use("/api/auth", authRouter);
 app.use("/api/resume", resumeRouter);
 app.use("/api/interview", interviewRouter);
+app.use("/api/payment", paymentRouter);
 
 app.use(errorHandler);
 
