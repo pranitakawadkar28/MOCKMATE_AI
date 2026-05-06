@@ -6,13 +6,11 @@ export const registerUser = createAsyncThunk(
   async (data, thunkAPI) => {
     try {
       const res = await api.post("/auth/register", data);
-      return res.data.data.user.email; 
+      return res.data.data.user.email;
     } catch (err) {
-      return thunkAPI.rejectWithValue(
-        err.response?.data?.message
-      );
+      return thunkAPI.rejectWithValue(err.response?.data?.message);
     }
-  }
+  },
 );
 
 export const verifyOtp = createAsyncThunk(
@@ -25,13 +23,10 @@ export const verifyOtp = createAsyncThunk(
       });
 
       return res.data.data.user;
-
     } catch (err) {
-      return thunkAPI.rejectWithValue(
-        err.response?.data?.message
-      );
+      return thunkAPI.rejectWithValue(err.response?.data?.message);
     }
-  }
+  },
 );
 
 export const loginUser = createAsyncThunk(
@@ -42,11 +37,9 @@ export const loginUser = createAsyncThunk(
 
       return res.data.data.user;
     } catch (err) {
-      return thunkAPI.rejectWithValue(
-        err.response?.data?.message
-      );
+      return thunkAPI.rejectWithValue(err.response?.data?.message);
     }
-  }
+  },
 );
 
 export const forgotPassword = createAsyncThunk(
@@ -58,7 +51,7 @@ export const forgotPassword = createAsyncThunk(
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response?.data?.message);
     }
-  }
+  },
 );
 
 export const resetPassword = createAsyncThunk(
@@ -69,20 +62,17 @@ export const resetPassword = createAsyncThunk(
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response?.data?.message);
     }
-  }
+  },
 );
 
-export const getMe = createAsyncThunk(
-  "auth/getMe",
-  async (_, thunkAPI) => {
-    try {
-      const res = await api.get("/auth/me");
-      return res.data.data.user;
-    } catch (err) {
-      return thunkAPI.rejectWithValue(err.response?.data?.message);
-    }
+export const getMe = createAsyncThunk("auth/getMe", async (_, thunkAPI) => {
+  try {
+    const res = await api.get("/auth/me");
+    return res.data.data.user;
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response?.data?.message);
   }
-);
+});
 
 export const logoutUser = createAsyncThunk(
   "auth/logout",
@@ -90,6 +80,7 @@ export const logoutUser = createAsyncThunk(
     try {
       await api.post("/auth/logout");
     } catch (err) {
+      return thunkAPI.fulfillWithValue(null);
     }
-  }
+  },
 );

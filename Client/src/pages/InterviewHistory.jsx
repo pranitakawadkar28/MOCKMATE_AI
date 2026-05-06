@@ -64,7 +64,7 @@ const InterviewHistory = () => {
                     </h3>
 
                     <p className="text-gray-500 text-sm mt-1">
-                      {item.experience} . {item.mode}
+                      {item.experience} . {item.model}
                     </p>
 
                     <p className="text-xs text-gray-400 mt-2">

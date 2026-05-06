@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { logout } from "../features/auth/authSlice";
 import Auth from "../components/Auth";
+import { logoutUser } from "../features/auth/authThunks";
 
 const Navbar = () => {
   const { user } = useSelector((state) => state.auth);
@@ -96,7 +97,8 @@ const Navbar = () => {
                 </button>
                 <button
                   onClick={() => {
-                    dispatch(logout());
+                    dispatch(logoutUser());
+                        dispatch(logout());         
                     setShowUserPopUp(false); 
                     navigate("/");
                   }}

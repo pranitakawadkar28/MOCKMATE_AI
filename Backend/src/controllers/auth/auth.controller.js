@@ -68,7 +68,7 @@ export const loginController = async (req, res, next) => {
 
 export const logoutController = async (req, res, next) => {
   try {
-    const refreshToken = req.cookies?.refreshToken; // ✅ sirf yeh kaafi hai
+    const refreshToken = req.cookies?.refreshToken; 
 
     await logoutService(null, refreshToken);
 

@@ -6,11 +6,8 @@ import AppRouter from "./routes/AppRouter";
 const App = () => {
   const dispatch = useDispatch();
 
-  // App.jsx me temporarily add karo
 useEffect(() => {
-    dispatch(getMe()).then((res) => {
-        console.log(res.payload)
-    });
+    dispatch(getMe())
 }, []);
 
   return <AppRouter />;

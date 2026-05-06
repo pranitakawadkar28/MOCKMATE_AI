@@ -8,6 +8,7 @@ import { BsRobot } from "react-icons/bs";
 import { IoSparklesSharp } from "react-icons/io5";
 import { motion } from "motion/react";
 import { FcGoogle } from "react-icons/fc";
+const API_BASE = import.meta.env.VITE_API_URL;
 
 const Register = ({ isModel = false, switchAuth, onClose }) => {
   const [form, setForm] = useState({
@@ -27,17 +28,25 @@ const Register = ({ isModel = false, switchAuth, onClose }) => {
     return () => {
       dispatch(resetAuthState());
     };
-  }, []);
+  }, [dispatch]);
+
+  // useEffect(() => {
+  //   if (isRegistered) {
+  //     if (isModel) {
+  //       onClose?.();
+  //       // navigate(`/verify-otp?email=${form.email}`);
+  //     } else {
+  //       navigate(`/verify-otp?email=${form.email}`);
+  //     }
+  //   }
+  // }, [isRegistered, navigate, form.email, isModel, onClose]);
 
   useEffect(() => {
-    if (isRegistered) {
-      if (isModel) {
-        onClose?.();
-      } else {
-        navigate(`/verify-otp?email=${form.email}`);
-      }
-    }
-  }, [isRegistered, navigate, form.email]);
+  if (isRegistered) {
+    navigate(`/verify-otp?email=${form.email}`);
+    if (isModel) onClose?.();
+  }
+}, [isRegistered, navigate, form.email, isModel, onClose]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -55,7 +64,7 @@ const Register = ({ isModel = false, switchAuth, onClose }) => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:8001/api/auth/google";
+    window.location.href = `${API_BASE}/api/auth/google`;
   };
 
   return (

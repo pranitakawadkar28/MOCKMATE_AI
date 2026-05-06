@@ -39,7 +39,7 @@ const Step1SetUp = ({ onStart }) => {
       onStart({
         interviewId: result.interviewId,
         questions: result.questions,
-        userName: role,
+        userName: result.userName,
         role,
         experience,
         mode,
