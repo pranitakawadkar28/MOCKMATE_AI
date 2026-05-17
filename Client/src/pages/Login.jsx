@@ -48,7 +48,8 @@ const Login = ({ isModel = false, switchAuth }) => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:8001/api/auth/google";
+    const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:8001/api";
+    window.location.href = `${baseUrl}/auth/google`;
   };
 
   return (
