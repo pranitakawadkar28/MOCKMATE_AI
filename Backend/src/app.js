@@ -19,7 +19,15 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: FRONTEND_URL,
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      // Allow FRONTEND_URL, localhost, and any Vercel preview deployments
+      if (!origin || origin === FRONTEND_URL || origin.startsWith("http://localhost") || origin.endsWith(".vercel.app")) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   }),
 );
