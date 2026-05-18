@@ -6,15 +6,16 @@ import {
   EMAIL_USER,
 } from "../config/env.js";
 
-const transporter = nodemailer.createTransport({
-  host: EMAIL_HOST,
-  port: EMAIL_PORT,
-  secure: Number(EMAIL_PORT) === 465,
+import mg from "nodemailer-mailgun-transport";
+
+const mailgunAuth = {
   auth: {
-    user: EMAIL_USER,
-    pass: EMAIL_PASS,
+    api_key: process.env.MAILGUN_API_KEY,
+    domain: process.env.MAILGUN_DOMAIN,
   },
-});
+};
+
+const transporter = nodemailer.createTransport(mg(mailgunAuth));
 
 export const sendOtpEmail = async (email, otp) => {
   await transporter.sendMail({
