@@ -47,7 +47,7 @@ export const registerService = async ({ username, email, password }) => {
     await sendOtpEmail(email, otp);
   } catch (err) {
     await User.deleteOne({ email });
-    throw new AppError("FAILED_TO_SEND_OTP", 500);
+    throw new AppError("FAILED_TO_SEND_OTP: " + err.message, 500);
   }
 
   return { user };
