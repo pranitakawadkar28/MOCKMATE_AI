@@ -30,17 +30,6 @@ const Register = ({ isModel = false, switchAuth, onClose }) => {
     };
   }, [dispatch]);
 
-  // useEffect(() => {
-  //   if (isRegistered) {
-  //     if (isModel) {
-  //       onClose?.();
-  //       // navigate(`/verify-otp?email=${form.email}`);
-  //     } else {
-  //       navigate(`/verify-otp?email=${form.email}`);
-  //     }
-  //   }
-  // }, [isRegistered, navigate, form.email, isModel, onClose]);
-
   useEffect(() => {
   if (isRegistered) {
     navigate(`/verify-otp?email=${form.email}`);
